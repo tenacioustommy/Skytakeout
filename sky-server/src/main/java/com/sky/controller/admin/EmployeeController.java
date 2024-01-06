@@ -26,6 +26,8 @@ import java.util.HashMap;
 import java.util.Map;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 
 /**
  * 员工管理
@@ -97,5 +99,27 @@ public class EmployeeController {
         log.info("employee page {}", employeePageQueryDTO);
         PageResult pageResult = employeeService.pageQuery(employeePageQueryDTO);
         return Result.success(pageResult);
+    }
+
+    @PostMapping("status/{status}")
+    @ApiOperation("account enable or disable")
+    public Result startorstop(@PathVariable Integer status, Long id) {
+        log.info("enable or disable account: {},{}", status, id);
+        employeeService.startorstop(status, id);
+        return Result.success();
+    }
+
+    @GetMapping("/{id}")
+    @ApiOperation("get employee by id")
+    public Result<Employee> getbyid(@PathVariable Long id) {
+        Employee employee = employeeService.getById(id);
+        return Result.success(employee);
+    }
+
+    @PutMapping
+    @ApiOperation("修改员工信息")
+    public Result update(@RequestBody EmployeeDTO employeeDTO) {
+        employeeService.update(employeeDTO);
+        return Result.success();
     }
 }

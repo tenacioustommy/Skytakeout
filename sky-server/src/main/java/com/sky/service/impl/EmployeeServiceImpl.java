@@ -1,13 +1,8 @@
 package com.sky.service.impl;
 
-import com.aliyuncs.ram.model.v20150501.CreateUserResponse.User;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.fasterxml.jackson.databind.JsonSerializable.Base;
-import com.github.pagehelper.PageHelper;
 import com.sky.constant.MessageConstant;
 import com.sky.constant.PasswordConstant;
 import com.sky.constant.StatusConstant;
@@ -21,10 +16,14 @@ import com.sky.exception.AccountNotFoundException;
 import com.sky.exception.PasswordErrorException;
 import com.sky.mapper.EmployeeMapper;
 import com.sky.result.PageResult;
+import com.sky.result.Result;
 import com.sky.service.EmployeeService;
 
 import ch.qos.logback.core.joran.util.beans.BeanUtil;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.parameters.RequestBody;
 
+import java.security.DrbgParameters.Reseed;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -33,7 +32,9 @@ import org.apache.ibatis.session.RowBounds;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.yaml.snakeyaml.constructor.BaseConstructor;
+import java.util.Objects;
 
 @Service
 public class EmployeeServiceImpl implements EmployeeService {
@@ -48,6 +49,7 @@ public class EmployeeServiceImpl implements EmployeeService {
      * @return
      */
     public Employee login(EmployeeLoginDTO employeeLoginDTO) {
+        // 获取用户名和密码
         String username = employeeLoginDTO.getUsername();
         String password = employeeLoginDTO.getPassword();
 
@@ -106,5 +108,22 @@ public class EmployeeServiceImpl implements EmployeeService {
         long total = userpage.getTotal();
         List<Employee> userlist = userpage.getRecords();
         return new PageResult(total, userlist);
+    }
+
+    public void startorstop(Integer status, Long id) {
+        Employee employee = Employee.builder().status(status).id(id).build();
+        employeeMapper.updateById(employee);
+    }
+
+    public Employee getById(Long id) {
+        return employeeMapper.selectById(id);
+    }
+
+    public void update(@RequestBody EmployeeDTO employeeDTO) {
+        Employee employee = new Employee();
+        BeanUtils.copyProperties(employeeDTO, employee);
+        employee.setUpdateTime(LocalDateTime.now());
+        employee.setUpdateUser(BaseContext.getCurrentId());
+        employeeMapper.updateById(employee);
     }
 }
