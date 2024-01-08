@@ -12,17 +12,22 @@ spring:
       url: jdbc:mysql://${sky.datasource.host}:${sky.datasource.port}/${sky.datasource.database}?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=utf-8&zeroDateTimeBehavior=convertToNull&useSSL=false&allowPublicKeyRetrieval=true
       username: ${sky.datasource.username}
       password: ${sky.datasource.password}
-
-mybatis-plus:
-  configuration:
-    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
-# mybatis:
-#   #mapper配置文件
+# mybatis-plus:
 #   mapper-locations: classpath:mapper/*.xml
-#   type-aliases-package: com.sky.entity
 #   configuration:
-#     #开启驼峰命名
 #     map-underscore-to-camel-case: true
+#     # log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+#   global-config:
+#     db-config:
+#       id-type: assign-id
+
+mybatis:
+  #mapper配置文件
+  mapper-locations: classpath:mapper/*.xml
+  type-aliases-package: com.sky.entity
+  configuration:
+    #开启驼峰命名
+    map-underscore-to-camel-case: true
 
 logging:
   level:
